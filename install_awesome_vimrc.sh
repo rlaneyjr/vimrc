@@ -1,18 +1,27 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -e
 
-cd ~/.vim_runtime
+if [[ -d "~/.vim_runtime" && ! -L "~/.vim_runtime" ]]; then
+    echo "Backing up ~/.vim_runtime to ~/.vim_runtime_backup"
+    mv ~/.vim_runtime ~/.vim_runtime_backup;
+elif [[ -L "~/.vim_runtime" ]]; then
+    echo "Unlinking ~/.vim_runtime"
+    unlink ~/.vim_runtime;
+fi
 
-echo 'set runtimepath+=~/.vim_runtime
+if [[ -f "~/.vimrc" && ! -L "~/.vimrc" ]]; then
+    echo -e "Moving ~/.vimrc to ~/.vimrc_backup"
+    mv ~/.vimrc ~/.vimrc_backup
+elif [[ -L "~/.vimrc" ]]; then
+    echo -e "Unlinking ~/.vimrc"
+    unlink ~/.vimrc
+fi
 
-source ~/.vim_runtime/vimrcs/basic.vim
-source ~/.vim_runtime/vimrcs/filetypes.vim
-source ~/.vim_runtime/vimrcs/plugins_config.vim
-source ~/.vim_runtime/vimrcs/extended.vim
-
-try
-source ~/.vim_runtime/my_configs.vim
-catch
-endtry' > ~/.vimrc
+echo "Linking ~/.vim_runtime"
+ln -s $PWD ~/.vim_runtime;
+echo "Linking ~/.vimrc"
+ln -s $PWD/source_vimrc ~/.vimrc;
 
 echo "Installed the Ultimate Vim configuration successfully! Enjoy :-)"
+
+exit 0
